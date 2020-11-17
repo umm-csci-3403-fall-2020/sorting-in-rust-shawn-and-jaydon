@@ -20,8 +20,8 @@ fn main() {
     let before_merged = Instant::now();
     let merged_v = merge_sort(&v);
     println!("Elapsed time for mergesort was {:?}.", before_merged.elapsed());
-    // println!("{:?}", v);
-    // println!("{:?}", merged_v);
+    println!("{:?}", v);
+    println!("{:?}", merged_v);
     println!("Is the original, random list in order?: {:?}", is_sorted(&v));
     println!("Was insertion sort in order?: {:?}", is_sorted(&u));
     println!("Was quicksort in order?: {:?}", is_sorted(&w));
@@ -93,12 +93,11 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
     if length < 2 {
         return;
     }
-
+    
     // Now choose a pivot and do the organizing.
     
-    // ...
 
-    let smaller = 99999999; // Totally wrong – you should fix this.
+    let smaller = 0; // Totally wrong – you should fix this.
 
     // Sort all the items < pivot
     quicksort(&mut v[0..smaller]);
@@ -137,8 +136,11 @@ fn merge_sort<T: PartialOrd + std::marker::Copy + std::fmt::Debug>(v: &[T]) -> V
     }
     let middle = v.len() / 2; //rounds down by default
     let left = merge_sort(&v[0..middle]);
+    println!("Left array: {:?}", left);
     let right = merge_sort(&v[middle .. len]);
+    println!("Right array: {:?}", right);
     let result = merge(left, right);
+    //println!("Top level result: {:?}", result);
     return result
 }
 
@@ -158,7 +160,28 @@ fn merge<T: PartialOrd + std::marker::Copy + std::fmt::Debug>(xs: Vec<T>, ys: Ve
 
     // This is totally wrong and will not sort. You should replace it
     // with something useful. :)
-    return xs;
+    let mut left = 0;
+    let mut right = 0;
+    let mut result = Vec::<T>::new(); 
+
+    while left < xs.len() && right < ys.len() {
+        if xs[left] <= ys[right] {
+            result.push(xs[left]);
+            left += 1;
+        } else {
+            result.push(ys[right]);
+            right += 1;
+        }
+    }
+    while left < xs.len() {
+        result.push(xs[left]);
+        left += 1;
+    }
+    while right < ys.len() {
+        result.push(ys[right]);
+        right += 1;
+    }
+    return result
 }
 
 fn is_sorted<T: PartialOrd>(slice: &[T]) -> bool {
