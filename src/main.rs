@@ -93,11 +93,8 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
     if length < 2 {
         return;
     }
-    
     // Now choose a pivot and do the organizing.
-    
-
-    let smaller = 0; // Totally wrong – you should fix this.
+    let smaller = partition(v);
 
     // Sort all the items < pivot
     quicksort(&mut v[0..smaller]);
@@ -107,6 +104,23 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
     quicksort(&mut v[smaller+1..length]);
 }
 
+fn partition<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) -> usize {
+    let len = v.len();
+    let pivot_i = len/2;
+    let last_i = len-1;
+
+    v.swap(pivot_i, last_i);
+
+    let mut store_i = 0;
+    for i in 0..last_i {
+        if &v[i] < &v[last_i] {
+            v.swap(i, store_i);
+            store_i += 1;
+        }
+    }
+    v.swap(store_i, len - 1);
+    store_i
+}
 // Mergesort can't be done "in place", so it needs to return a _new_
 // Vec<T> of the sorted elements. The array elements need to have
 // the traits `PartialOrd` and `Debug` like in the other sorting
