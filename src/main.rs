@@ -20,8 +20,8 @@ fn main() {
     let before_merged = Instant::now();
     let merged_v = merge_sort(&v);
     println!("Elapsed time for mergesort was {:?}.", before_merged.elapsed());
-    // println!("{:?}", v);
-    // println!("{:?}", merged_v);
+    println!("{:?}", v);
+    println!("{:?}", merged_v);
     println!("Is the original, random list in order?: {:?}", is_sorted(&v));
     println!("Was insertion sort in order?: {:?}", is_sorted(&u));
     println!("Was quicksort in order?: {:?}", is_sorted(&w));
@@ -93,12 +93,8 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
     if length < 2 {
         return;
     }
-
     // Now choose a pivot and do the organizing.
-    
-    // ...
-
-    let smaller = 99999999; // Totally wrong – you should fix this.
+    let smaller = partition(v);
 
     // Sort all the items < pivot
     quicksort(&mut v[0..smaller]);
@@ -108,6 +104,23 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
     quicksort(&mut v[smaller+1..length]);
 }
 
+fn partition<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) -> usize {
+    let len = v.len();
+    let pivot_i = len/2;
+    let last_i = len-1;
+
+    v.swap(pivot_i, last_i);
+
+    let mut store_i = 0;
+    for i in 0..last_i {
+        if &v[i] < &v[last_i] {
+            v.swap(i, store_i);
+            store_i += 1;
+        }
+    }
+    v.swap(store_i, len - 1);
+    store_i
+}
 // Mergesort can't be done "in place", so it needs to return a _new_
 // Vec<T> of the sorted elements. The array elements need to have
 // the traits `PartialOrd` and `Debug` like in the other sorting
@@ -137,8 +150,11 @@ fn merge_sort<T: PartialOrd + std::marker::Copy + std::fmt::Debug>(v: &[T]) -> V
     }
     let middle = v.len() / 2; //rounds down by default
     let left = merge_sort(&v[0..middle]);
+    println!("Left array: {:?}", left);
     let right = merge_sort(&v[middle .. len]);
+    println!("Right array: {:?}", right);
     let result = merge(left, right);
+    //println!("Top level result: {:?}", result);
     return result
 }
 
@@ -158,7 +174,28 @@ fn merge<T: PartialOrd + std::marker::Copy + std::fmt::Debug>(xs: Vec<T>, ys: Ve
 
     // This is totally wrong and will not sort. You should replace it
     // with something useful. :)
-    return xs;
+    let mut left = 0;
+    let mut right = 0;
+    let mut result = Vec::<T>::new(); 
+
+    while left < xs.len() && right < ys.len() {
+        if xs[left] <= ys[right] {
+            result.push(xs[left]);
+            left += 1;
+        } else {
+            result.push(ys[right]);
+            right += 1;
+        }
+    }
+    while left < xs.len() {
+        result.push(xs[left]);
+        left += 1;
+    }
+    while right < ys.len() {
+        result.push(ys[right]);
+        right += 1;
+    }
+    return result
 }
 
 fn is_sorted<T: PartialOrd>(slice: &[T]) -> bool {
